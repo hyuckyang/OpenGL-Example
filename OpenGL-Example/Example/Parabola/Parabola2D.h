@@ -92,18 +92,28 @@ private:
 	PredictionResult prediction; // ½Ã¹Ä
 
 	// ¹Ù´Ú
+	vector<Vertex> groundData;
 	GLuint groundVAO;
 	GLuint groundVBO;
-	vector<Vertex> groundData;
 
 	// Àå¾Ö¹°
 	vector<Obstacle> obstacles;
 	vector<Vertex> obsData;
-	GLuint obsVAO, obsVBO;
+	GLuint obsVAO;
+	GLuint obsVBO;
 
 	// ±ËÀû
-	GLuint trajVAO, trajVBO;
 	vector<Vertex> trajData;
+	GLuint trajVAO;
+	GLuint trajVBO;
+
+	// ¹ß»çÃ¼ 
+	vector<Projectile> projectiles;
+	float lastTime;
+	
+	vector<Vertex> projData;
+	GLuint projVAO;
+	GLuint projVBO;
 	
 
 private:

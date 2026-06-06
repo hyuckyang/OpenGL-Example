@@ -99,6 +99,11 @@ void Parabola2D::InitFunc(GLFWwindow* window)
     }
 
     BufferLamda(trajVAO, trajVBO, trajData, GL_DYNAMIC_DRAW);
+
+    // 발사체
+    BufferLamda(projVAO, projVBO, projData, GL_DYNAMIC_DRAW);
+
+    lastTime = glfwGetTime();
 }
 
 void Parabola2D::DrawFunc(GLFWwindow* window)
@@ -124,11 +129,103 @@ void Parabola2D::DrawFunc(GLFWwindow* window)
     // 궤적
     glBindVertexArray(trajVAO);
     glDrawArrays(GL_LINE_STRIP, 0, trajData.size());
+
+    // 발사체
+    if (!projData.empty())
+    {
+        glBindVertexArray(projVAO);
+        glDrawArrays(GL_TRIANGLES, 0, projData.size());
+    }   
 }
 
 void Parabola2D::UpdateFunc(GLFWwindow* window)
 {
-    
+    // 발사체 업데이트
+    float currentTime = glfwGetTime();
+    float dt = currentTime - lastTime;
+    lastTime = currentTime;
+
+    // 업데이트 데이터 초기화 -> 다시 업데이트 데이터 push
+    projData.clear();
+
+    for (int i = projectiles.size() - 1; i >= 0; --i)
+    {
+        // 이동
+        projectiles[i].velocity.y += gravity * dt;
+
+        // 가운데 위치 및 다음 위치 계산
+        glm::vec2 projCenter((projectiles[i].xMin + projectiles[i].xMax) / 2.0f, (projectiles[i].yMin + projectiles[i].yMax) / 2.0f);
+        glm::vec2 nextPos = projCenter + projectiles[i].velocity * dt;
+
+        // 충돌 Rect 업데이트
+        projectiles[i].UpdatePosition(nextPos, glm::vec2(10.0f, 5.0f));
+
+        bool isDestroyed = false;
+
+        // 바닥 검사
+        if (projectiles[i].yMin <= groundY)
+        {
+            isDestroyed = true;
+        }
+        // 화면 밖으로 나간다면 ( 800 )
+        else if (projectiles[i].xMin > 800.0f || projectiles[i].xMax < 0.0f)
+        {
+            isDestroyed = true;
+        }
+        // 충돌 검사 
+        else 
+        {
+            for (const auto& obs : obstacles) 
+            {
+                if (projectiles[i].IsOverlap(obs)) 
+                {
+                    isDestroyed = true;
+                    break;
+                }
+            }
+        }
+
+        // 파괴 되었다면 삭제
+        if (isDestroyed) 
+        {
+            projectiles.erase(projectiles.begin() + i);
+            continue;
+        }
+
+        // 현재 방향에 따른 회전값 및 기타 셋팅
+        float angleRad = atan2(projectiles[i].velocity.y, projectiles[i].velocity.x);
+        glm::vec2 center((projectiles[i].xMin + projectiles[i].xMax) / 2.0f, (projectiles[i].yMin + projectiles[i].yMax) / 2.0f);
+        glm::vec2 halfSize(10.0f, 5.0f);
+        glm::vec4 color(1.0f, 1.0f, 0.0f, 1.0f);
+
+        // 좌우상하 로컬좌표 지정
+        glm::vec2 localCorners[4] = 
+        {
+            {-halfSize.x, -halfSize.y}, { halfSize.x, -halfSize.y},
+            { halfSize.x,  halfSize.y}, {-halfSize.x,  halfSize.y}
+        };
+
+        Vertex verts[4];
+        for (int j = 0; j < 4; ++j)
+        {
+            // 간단한 회전 공식 (cos, -sin, sin, cos) 로컬좌표 마다 지정
+            float rx = localCorners[j].x * cos(angleRad) - localCorners[j].y * sin(angleRad);
+            float ry = localCorners[j].x * sin(angleRad) + localCorners[j].y * cos(angleRad);
+            verts[j] = { {center.x + rx, center.y + ry}, color };
+        }
+
+        // 삼각형 2개로 분활 및 데이터에 저장 
+        projData.push_back(verts[0]); projData.push_back(verts[1]); projData.push_back(verts[2]);
+        projData.push_back(verts[0]); projData.push_back(verts[2]); projData.push_back(verts[3]);
+    }
+
+    if (!projData.empty()) 
+    {
+        // 갱신되 데이터 그래픽 메모리에 덮어 쓰기
+        glBindBuffer(GL_ARRAY_BUFFER, projVBO);
+        glBufferData(GL_ARRAY_BUFFER, projData.size() * sizeof(Vertex), projData.data(), GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 }
 
 void Parabola2D::KeyFuncEvent(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -137,10 +234,20 @@ void Parabola2D::KeyFuncEvent(GLFWwindow* window, int key, int scancode, int act
 
     if (action == GLFW_PRESS || action == GLFW_REPEAT) 
     {
+        if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+        {
+            glm::vec2 halfSize(10.0f, 5.0f); // 탄환 크기 (가로 10, 세로 5로 길쭉하게)
+            Projectile proj(playerPos, halfSize);
+
+            float rad = glm::radians(angle);
+            proj.velocity = glm::vec2(power * cos(rad), power * sin(rad));
+
+            projectiles.push_back(proj);
+        }
+
         bool isChanged = false; 
 
         // 상하 -> 각도 , 좌우 -> 힘
-
         if (key == GLFW_KEY_UP)     { angle += 2.0f;    isChanged = true; }
         if (key == GLFW_KEY_DOWN)   { angle -= 2.0f;    isChanged = true; }
         if (key == GLFW_KEY_RIGHT)  { power += 50.0f;   isChanged = true; }
@@ -175,7 +282,7 @@ PredictionResult Parabola2D::CalcTrajectory(glm::vec2 startPos, float angle, flo
     PredictionResult result;
     result.hitObstacle = false; //
 
-    const float dt = 0.015f; // 프레임당 예상 시간
+    const float dt = 0.0015f; // 프레임당 예상 시간
     float rad = glm::radians(angle);
 
     Projectile bullet(startPos, glm::vec2(5.f, 5.f)); // 위치, 사이즈(절반)
@@ -185,7 +292,7 @@ PredictionResult Parabola2D::CalcTrajectory(glm::vec2 startPos, float angle, flo
     glm::vec2 currentPos = startPos;
     result.path.push_back(currentPos);
 
-    const int MAX_STEPS = 1000;
+    const int MAX_STEPS = 2000;
 
     for (int i = 0; i < MAX_STEPS; ++i) 
     {
