@@ -124,7 +124,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Example\Parabola\Parabola2D.cpp" />
-    <ClCompile Include="Example\FieldOfView\FieldOfView2D.cpp" />
     <ClCompile Include="Framework\Framework.cpp" />
     <ClCompile Include="Framework\Framework_Based.cpp" />
     <ClCompile Include="Framework\Framework_Drags.cpp" />
@@ -134,7 +133,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Example\Parabola\Parabola2D.h" />
-    <ClInclude Include="Example\FieldOfView\FieldOfView2D.h" />
     <ClInclude Include="Framework\Framework.h" />
     <ClInclude Include="Framework\Framework_Based.h" />
     <ClInclude Include="Framework\Framework_Drags.h" />
@@ -142,8 +140,6 @@
     <ClInclude Include="Util\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Example\FieldOfView\shader.frag" />
-    <None Include="Example\FieldOfView\shader.vert" />
     <None Include="Example\Parabola\shader.frag" />
     <None Include="Example\Parabola\shader.vert" />
   </ItemGroup>
