@@ -19,3 +19,8 @@
 주요 기능 (Features)
 * 벡터의 내적(Dot Product)을 실시간 2D 시야각(FOV) 객체 탐지 구현
 * 간단한 수학공식을 활용한 선분과 원 경계의 교차점 계산 및 시야각 선분 렌더링
+
+## SDFs 기본 학습 내용 구현
+<img width="392" height="394" alt="sdfs2" src="https://github.com/user-attachments/assets/18df2ea9-0102-41e6-a509-bdb64a4d17f7" />
+
+주요 기능 (Features)
