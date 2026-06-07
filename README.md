@@ -27,3 +27,5 @@
 * 참조: 유튜브 kishimisu의 'Shader Art Coding' 튜토리얼 (https://youtu.be/f4s1h2YETNY)
 * 공간 분할: fract() 함수를 활용한 2D 공간의 반복적 분할 및 프랙탈 형태의 패턴 생성
 * 색상 애니메이션: 시간(iTime)과 코사인 팔레트를 조합한 역동적인 네온 글로우(Neon Glow) 렌더링
+
+## SDFs 구현 내용 추가 중..
