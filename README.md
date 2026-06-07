@@ -12,3 +12,6 @@
 * 실시간 2D 포물선 궤적 예측 및 물리 시뮬레이션 구현
 * 간단한 수학 공식(아크탄젠트(Arctangent)) 을 활용한 발사체 구현
 * 간단한 사각형 장애물(AABB) 및 바닥 영역과의 충돌 검사
+
+
+<img width="492" height="494" alt="b22" src="https://github.com/user-attachments/assets/914850ab-d9d0-4e3c-b145-776016a9a206" />
