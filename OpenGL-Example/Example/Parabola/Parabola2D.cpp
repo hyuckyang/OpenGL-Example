@@ -29,7 +29,7 @@ void Parabola2D::InitFunc(GLFWwindow* window)
     prediction = CalcTrajectory(playerPos, angle, power, gravity, groundY, obstacles);
 
     // Buffer Setup
-    auto BufferLamda = [](GLuint& vao, GLuint& vbo, const vector<Vertex>& data, GLenum usage)
+    auto BufferLamda = [](GLuint& vao, GLuint& vbo, const vector<PVertex>& data, GLenum usage)
         {
             glGenVertexArrays(1, &vao);
             glGenBuffers(1, &vbo);
@@ -40,15 +40,15 @@ void Parabola2D::InitFunc(GLFWwindow* window)
             // 데이터가 존재 할 때만 그래픽 메모리에 저장
             if (!data.empty()) 
             {
-                glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), data.data(), usage);
+                glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(PVertex), data.data(), usage);
             }
 
             // 위치
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(PVertex), (void*)offsetof(PVertex, pos));
             glEnableVertexAttribArray(0);
 
             // 색
-            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(PVertex), (void*)offsetof(PVertex, color));
             glEnableVertexAttribArray(1);
 
             // 바인딩 닫기 
@@ -58,8 +58,8 @@ void Parabola2D::InitFunc(GLFWwindow* window)
 
 
     // 바닥 설정
-    Vertex leftPoint  = { glm::vec2(0.0f, groundY), glm::vec4(0.3f, 0.8f, 0.3f, 1.0f) };
-    Vertex rightPoint = { glm::vec2(800.0f, groundY), glm::vec4(0.3f, 0.8f, 0.3f, 1.0f) };
+    PVertex leftPoint  = { glm::vec2(0.0f, groundY), glm::vec4(0.3f, 0.8f, 0.3f, 1.0f) };
+    PVertex rightPoint = { glm::vec2(800.0f, groundY), glm::vec4(0.3f, 0.8f, 0.3f, 1.0f) };
 
     groundData.push_back(leftPoint);
     groundData.push_back(rightPoint);
@@ -74,13 +74,13 @@ void Parabola2D::InitFunc(GLFWwindow* window)
     for (const auto& obs : obstacles) 
     {
         
-        Vertex v1 = { glm::vec2(obs.xMin, obs.yMin), obs.color };
-        Vertex v2 = { glm::vec2(obs.xMax, obs.yMin), obs.color };
-        Vertex v3 = { glm::vec2(obs.xMax, obs.yMax), obs.color };
+        PVertex v1 = { glm::vec2(obs.xMin, obs.yMin), obs.color };
+        PVertex v2 = { glm::vec2(obs.xMax, obs.yMin), obs.color };
+        PVertex v3 = { glm::vec2(obs.xMax, obs.yMax), obs.color };
                                   
-        Vertex v4 = { glm::vec2(obs.xMin, obs.yMin), obs.color };
-        Vertex v5 = { glm::vec2(obs.xMax, obs.yMax), obs.color };
-        Vertex v6 = { glm::vec2(obs.xMin, obs.yMax), obs.color };
+        PVertex v4 = { glm::vec2(obs.xMin, obs.yMin), obs.color };
+        PVertex v5 = { glm::vec2(obs.xMax, obs.yMax), obs.color };
+        PVertex v6 = { glm::vec2(obs.xMin, obs.yMax), obs.color };
 
         obsData.push_back(v1); obsData.push_back(v2); obsData.push_back(v3);
         obsData.push_back(v4); obsData.push_back(v5); obsData.push_back(v6);
@@ -92,7 +92,7 @@ void Parabola2D::InitFunc(GLFWwindow* window)
     // 미리 계산 된 포인트(prediction) 을 기준으로 궤적 데이터 저장
     for (const auto& p : prediction.path)
     {
-        Vertex v;
+        PVertex v;
         v.pos = p;
         v.color = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
         trajData.push_back(v);
@@ -205,7 +205,7 @@ void Parabola2D::UpdateFunc(GLFWwindow* window)
             { halfSize.x,  halfSize.y}, {-halfSize.x,  halfSize.y}
         };
 
-        Vertex verts[4];
+        PVertex verts[4];
         for (int j = 0; j < 4; ++j)
         {
             // 간단한 회전 공식 (cos, -sin, sin, cos) 로컬좌표 마다 지정
@@ -223,7 +223,7 @@ void Parabola2D::UpdateFunc(GLFWwindow* window)
     {
         // 갱신되 데이터 그래픽 메모리에 덮어 쓰기
         glBindBuffer(GL_ARRAY_BUFFER, projVBO);
-        glBufferData(GL_ARRAY_BUFFER, projData.size() * sizeof(Vertex), projData.data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, projData.size() * sizeof(PVertex), projData.data(), GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
@@ -262,7 +262,7 @@ void Parabola2D::KeyFuncEvent(GLFWwindow* window, int key, int scancode, int act
 
             for (const auto& p : prediction.path) 
             {
-                Vertex v;
+                PVertex v;
                 v.pos = p;
                 v.color = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f); 
                 trajData.push_back(v);
@@ -271,7 +271,7 @@ void Parabola2D::KeyFuncEvent(GLFWwindow* window, int key, int scancode, int act
             // 갱신된 데이터 덮어 쓰기 
             glBindBuffer(GL_ARRAY_BUFFER, trajVBO);
             
-            glBufferData(GL_ARRAY_BUFFER, trajData.size() * sizeof(Vertex), trajData.data(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, trajData.size() * sizeof(PVertex), trajData.data(), GL_DYNAMIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
     }

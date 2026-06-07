@@ -1,7 +1,13 @@
-#pragma once
+Ôªø#pragma once
 
 #include "../../Framework/Framework_ShaderLoader.h"
 #include <vector>
+
+struct FVertex
+{
+	glm::vec2 pos;
+	glm::vec4 color;
+};
 
 class FieldOfView2D : public Framework_ShaderLoader
 {
@@ -11,9 +17,8 @@ public:
 protected:
 
 	void CreateCircle(float radius, int VertCount);
-	//void CreatePoints();
 
-	bool CheckFOV(glm::vec4 point);
+	bool CheckFOV(glm::vec2 point);
 
 	virtual void InitFunc(GLFWwindow* window) override;
 	virtual void DrawFunc(GLFWwindow* window) override;
@@ -26,7 +31,7 @@ private:
 
 	glm::vec3 playerPos;
 	float     plyaerPosSpeed = 1.f;
-	float	  playerRot = 90.f; // ¡§∏È
+	float	  playerRot = 90.f; // Ï†ïÎ©¥
 	float	  playerRotSpeed = 180.f;
 	float	  playerFOVAngle = 60.f;
 	glm::vec3 playerForward;
@@ -34,12 +39,26 @@ private:
 	float	  inputForward = 0.f;
 	float	  inputRight = 0.f;
 
-	float					 deltaTime = 0.f;
-	system_clock::time_point lastTime = system_clock::now(); // º±æ Ω√, «ˆ¿Á Ω√∞£ ¡§¿«
+	float	  deltaTime = 0.f;
+	float	  lastTime = 0.f;
 
-	vector<glm::vec4> vertexCircle;
-	vector<glm::vec4> vertexFOV;
-	vector<glm::vec4> vertexPoints;
+	// Ïõê 
+	vector<FVertex> circleData;
+	GLuint circleVAO;
+	GLuint circleVBO;
+
+	// ÏãúÏïºÍ∞Å (FOV)
+	vector<FVertex> fovData;
+	GLuint fovVAO;
+	GLuint fovVBO;
+
+	// Í∞êÏßÄÎê† Ï†ê 
+	vector<glm::vec2> basePoints;
+
+	// Í∞êÏßÄÎêòÏñ¥ Í∑∏Î†§Ïßà Ï†ê 
+	vector<FVertex> pointsData;
+	GLuint pointsVAO;
+	GLuint pointsVBO;
 };
 
 

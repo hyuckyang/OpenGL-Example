@@ -3,7 +3,7 @@
 #include "../../Framework/Framework_ShaderLoader.h"
 #include <vector>
 
-struct Vertex 
+struct PVertex 
 {
 	glm::vec2 pos;   // 위치 데이터 (X, Y)
 	glm::vec4 color; // 색상 데이터 (R, G, B, A)
@@ -92,18 +92,18 @@ private:
 	PredictionResult prediction; // 시뮬
 
 	// 바닥
-	vector<Vertex> groundData;
+	vector<PVertex> groundData;
 	GLuint groundVAO;
 	GLuint groundVBO;
 
 	// 장애물
 	vector<Obstacle> obstacles;
-	vector<Vertex> obsData;
+	vector<PVertex> obsData;
 	GLuint obsVAO;
 	GLuint obsVBO;
 
 	// 궤적
-	vector<Vertex> trajData;
+	vector<PVertex> trajData;
 	GLuint trajVAO;
 	GLuint trajVBO;
 
@@ -111,7 +111,7 @@ private:
 	vector<Projectile> projectiles;
 	float lastTime;
 	
-	vector<Vertex> projData;
+	vector<PVertex> projData;
 	GLuint projVAO;
 	GLuint projVBO;
 	

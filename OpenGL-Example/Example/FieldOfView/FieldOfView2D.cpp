@@ -1,4 +1,4 @@
-#include "FieldOfView2D.h"
+ï»¿#include "FieldOfView2D.h"
 
 FieldOfView2D::FieldOfView2D()
 {
@@ -8,7 +8,7 @@ FieldOfView2D::FieldOfView2D()
 
 void FieldOfView2D::CreateCircle(float radius, int VertCount)
 {
-    vertexCircle.clear();
+    circleData.clear();
 
     float angle = (2.0f * M_PI) / (float)VertCount;
     for (int i = 0; i < VertCount; i++)
@@ -18,11 +18,11 @@ void FieldOfView2D::CreateCircle(float radius, int VertCount)
         float x = radius * cosf(theta);
         float y = radius * sinf(theta);
 
-        vertexCircle.push_back(glm::vec4(x, y, 0.f, 1.f));
+        circleData.push_back({ glm::vec2(x, y), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) });
     }
 }
 
-bool FieldOfView2D::CheckFOV(glm::vec4 point)
+bool FieldOfView2D::CheckFOV(glm::vec2 point)
 {
     glm::vec2 pos2D = glm::vec2(playerPos.x, playerPos.y);
     glm::vec2 point2D = glm::vec2(point.x, point.y);
@@ -36,9 +36,8 @@ bool FieldOfView2D::CheckFOV(glm::vec4 point)
     float radianSq = radian * radian;
 
     bool bDetected = false;
-    if (pointDistSq <= radianSq) // °Å¸®°¡ ¹üÀ§ ¾È ÀÌ¶ó¸é
+    if (pointDistSq <= radianSq) // ê±°ë¦¬ê°€ ë²”ìœ„ ì•ˆ ì´ë¼ë©´
     {
-        //glm::vec2 dir2D = glm::normalize(v);
         glm::vec2 dir2D = v / d;
 
         float dot = glm::dot(forward2D, dir2D);
@@ -55,9 +54,35 @@ void FieldOfView2D::InitFunc(GLFWwindow* window)
 {
     Framework_ShaderLoader::InitFunc(window);
 
-    CreateCircle(radian, 50);
+    auto BufferLamda = [](GLuint& vao, GLuint& vbo, const vector<FVertex>& data, GLenum usage)
+        {
+            glGenVertexArrays(1, &vao);
+            glGenBuffers(1, &vbo);
 
-    for (int i = -3; i <= 3; i++) // -1, 0, 1 (Áß¾ÓÀ» ±âÁØÀ¸·Î ¿¹»Ú°Ô ÆÛÁö°Ô ¹èÄ¡)
+            glBindVertexArray(vao);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+            if (!data.empty())
+            {
+                glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(FVertex), data.data(), usage);
+            }
+
+            // ìœ„ì¹˜ (0ë²ˆ)
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(FVertex), (void*)offsetof(FVertex, pos));
+            glEnableVertexAttribArray(0);
+
+            // ìƒ‰ìƒ (1ë²ˆ)
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(FVertex), (void*)offsetof(FVertex, color));
+            glEnableVertexAttribArray(1);
+
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        };
+
+    CreateCircle(radian, 50);
+    BufferLamda(circleVAO, circleVBO, circleData, GL_STATIC_DRAW);
+
+    for (int i = -3; i <= 3; i++) // -1, 0, 1 (ì¤‘ì•™ì„ ê¸°ì¤€ìœ¼ë¡œ ì˜ˆì˜ê²Œ í¼ì§€ê²Œ ë°°ì¹˜)
     {
         for (int j = -3; j <= 3; j++)
         {
@@ -69,11 +94,17 @@ void FieldOfView2D::InitFunc(GLFWwindow* window)
                 float radianSq = radian * radian;
                 if (radianSq > distSq)
                 {
-                    vertexPoints.push_back(glm::vec4(x, y, 0.0f, 1.0f));
+                    basePoints.push_back(glm::vec4(x, y, 0.0f, 1.0f));
                 }
             }
         }
     }
+
+    BufferLamda(pointsVAO, pointsVBO, pointsData, GL_DYNAMIC_DRAW);
+    BufferLamda(fovVAO, fovVBO, fovData, GL_DYNAMIC_DRAW);
+
+    // í˜„ì¬ ì‹œê°„ ì •ì˜ 
+    lastTime = glfwGetTime();
 }
 
 void FieldOfView2D::DrawFunc(GLFWwindow* window)
@@ -81,64 +112,45 @@ void FieldOfView2D::DrawFunc(GLFWwindow* window)
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    GLuint locPos = glGetAttribLocation(progID, "aPos");
-    GLuint locColor = glGetAttribLocation(progID, "aColor");
+    glUseProgram(progID);
 
-    // °øÅë ¼¼ÆÃ: ¼Ó¼º È°¼ºÈ­
-    glEnableVertexAttribArray(locPos);
-    if (locColor != -1) glDisableVertexAttribArray(locColor);
-
-    // ==========================================
-    // 1. ÇÏ¾á»ö Å×µÎ¸® ¿ø ±×¸®±â
-    // ==========================================
-    glVertexAttribPointer(locPos, 4, GL_FLOAT, GL_FALSE, 0, glm::value_ptr(vertexCircle[0]));
-    glVertexAttrib4f(locColor, 1.0f, 1.0f, 1.0f, 1.0f); // ÇÏ¾á»ö
-    glDrawArrays(GL_LINE_LOOP, 0, vertexCircle.size());
-
-    // ==========================================
-    // 2. ÃÊ·Ï»ö ½Ã¾ß°¢(FOV) ¼± ±×¸®±â
-    // ==========================================
-    // Æ÷ÀÎÅÍ¸¦ FOV ¹è¿­·Î ¹Ù²ãÄ¡±â ÇÕ´Ï´Ù.
-    glVertexAttribPointer(locPos, 4, GL_FLOAT, GL_FALSE, 0, glm::value_ptr(vertexFOV[0]));
-    glVertexAttrib4f(locColor, 0.0f, 1.0f, 0.0f, 1.0f); // ÃÊ·Ï»ö (R:0, G:1, B:0)
-    glDrawArrays(GL_LINES, 0, vertexFOV.size()); // GL_LINES ¸ğµå »ç¿ë
-
-    glPointSize(5);
-    for (auto point : vertexPoints)
+    // ì›
+    if (!circleData.empty())
     {
-        if (CheckFOV(point))
-        {
-            glVertexAttribPointer(locPos, 4, GL_FLOAT, GL_FALSE, 0, glm::value_ptr(point));
-            glDrawArrays(GL_POINTS, 0, 1); // GL_POINT ¸ğµå »ç¿ë
-        }
-
-        //// ¿ø·¡ ¾÷µ¥ÀÌÆ® ¿¡¼­ ÁøÇàµÇ¾î¾ß ÇÏ³ª Å×½ºÆ® Çü½ÄÀ¸·Î ¿©±â¼­ °Ë»ç ¹× Á¤ÀÇ
-        //if (CheckFOV(point))
-        //{
-        //    glVertexAttrib4f(locColor, 1.0f, 0.0f, 0.0f, 1.0f);
-        //   
-        //}
-        //else
-        //{
-        //    glVertexAttrib4f(locColor, 0.0f, 0.0f, 0.0f, 0.0f);
-        //}
-        //glDrawArrays(GL_POINTS, 0, 1); // GL_POINT ¸ğµå »ç¿ë
-
+        glBindVertexArray(circleVAO);
+        glDrawArrays(GL_LINE_LOOP, 0, circleData.size());
     }
+    
+
+    // ì‹œì•¼ê°
+    if (!fovData.empty())
+    {
+        glBindVertexArray(fovVAO);
+        glDrawArrays(GL_LINES, 0, fovData.size());
+    }
+
+    // ê°ì§€ëœ ì  
+    if (!pointsData.empty())
+    {
+        glPointSize(5);
+        glBindVertexArray(pointsVAO);
+        glDrawArrays(GL_POINTS, 0, pointsData.size());
+    }
+
+    glBindVertexArray(0);
 }
 
 void FieldOfView2D::UpdateFunc(GLFWwindow* window)
 {
-    system_clock::time_point curTime = system_clock::now();
-    milliseconds elapsedTimeMSEC = duration_cast<milliseconds>(curTime - lastTime);
-    deltaTime = (elapsedTimeMSEC.count() / 1000.0f);
-    lastTime = curTime; //
+    float currentTime = glfwGetTime();
+    deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
 
-    playerRot += inputRight * playerRotSpeed * deltaTime; // È¸Àü °ªÀ» ´õÇÔ
+    playerRot += inputRight * playerRotSpeed * deltaTime; // íšŒì „ ê°’ì„ ë”í•¨
     float rad = playerRot * M_PI / 180.f;
     playerForward = glm::vec3(cosf(rad), sinf(rad), 0.0f);
 
-    // line
+    
     glm::vec3 pos = playerPos + playerForward * inputForward * plyaerPosSpeed * deltaTime;
     float dot = glm::dot(pos, pos);
     float radianSq = radian * radian;
@@ -147,8 +159,8 @@ void FieldOfView2D::UpdateFunc(GLFWwindow* window)
         playerPos = pos;
     }
 
-    //
-    vertexFOV.clear();
+    // ì‹œì•¼ê° 
+    fovData.clear();
 
     float r = radian;
     float fovAngle = playerFOVAngle;
@@ -162,7 +174,7 @@ void FieldOfView2D::UpdateFunc(GLFWwindow* window)
     glm::mat4 rightRot = glm::rotate(glm::mat4(1.f), glm::radians(playerRot - fovAngle * 0.5f), glm::vec3(0.f, 0.f, 1.f));
     glm::vec2 rightDir = glm::vec2(rightRot * basedRot);
 
-    // Lamba -> ºøº¯, ±ÙÀÇ °ø½Ä À¸·Î ¹İÈ¯
+    // Lamba -> ë¹—ë³€, ê·¼ì˜ ê³µì‹ ìœ¼ë¡œ ë°˜í™˜
     auto GetInterScction = [&](glm::vec2 pos, glm::vec2 dir, float r) -> glm::vec2
         {
             float a = powf(dir.x, 2) + powf(dir.y, 2);
@@ -170,7 +182,7 @@ void FieldOfView2D::UpdateFunc(GLFWwindow* window)
             float c = powf(pos.x, 2) + powf(pos.y, 2) - powf(r, 2);
 
             float d = powf(b, 2) - 4 * a * c;
-            if (d >= 0.f) // 0 ¹Ì¸¸Àº Çã¼ö
+            if (d >= 0.f) // 0 ë¯¸ë§Œì€ í—ˆìˆ˜
             {
                 float t = (-b + sqrtf(d)) / (2.f * a);
 
@@ -182,12 +194,39 @@ void FieldOfView2D::UpdateFunc(GLFWwindow* window)
     glm::vec2 leftHit = GetInterScction(pos2D, leftDir, r);
     glm::vec2 rightHit = GetInterScction(pos2D, rightDir, r);
 
-    vertexFOV.push_back(glm::vec4(pos2D.x, pos2D.y, 0.0f, 1.0f));
-    vertexFOV.push_back(glm::vec4(leftHit.x, leftHit.y, 0.0f, 1.0f));
+    glm::vec4 fovColor(0.0f, 1.0f, 0.0f, 1.0f); // ì´ˆë¡ìƒ‰
+    fovData.push_back({ pos2D, fovColor });
+    fovData.push_back({ leftHit, fovColor });
 
-    vertexFOV.push_back(glm::vec4(pos2D.x, pos2D.y, 0.0f, 1.0f));
-    vertexFOV.push_back(glm::vec4(rightHit.x, rightHit.y, 0.0f, 1.0f));
+    fovData.push_back({ pos2D, fovColor });
+    fovData.push_back({ rightHit, fovColor });
 
+    // ì‹œì•¼ê° ë°ì´í„° ì—…ë°ì´íŠ¸(ê·¸ë˜í”½ ë©”ëª¨ë¦¬)
+    if (!fovData.empty())
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, fovVBO);
+        glBufferData(GL_ARRAY_BUFFER, fovData.size() * sizeof(FVertex), fovData.data(), GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    // ê°ì§€ í¬ì¸íŠ¸ 
+    pointsData.clear();
+    for (const auto& point : basePoints)
+    {
+        // ì‹œì•¼ê° ì•ˆì— ë“¤ì–´ì˜¨ë‹¤ë©´ ë°ì´í„° ì…‹íŒ…
+        if (CheckFOV(point))
+        {
+            pointsData.push_back({ point, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) });
+        }
+    }
+
+    // ê°ì§€ í¬ì¸íŠ¸ ê·¸ë˜í”½ ë©”ëª¨ë¦¬ ì—…ë°ì´íŠ¸
+    if (!pointsData.empty())
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, pointsVBO);
+        glBufferData(GL_ARRAY_BUFFER, pointsData.size() * sizeof(FVertex), pointsData.data(), GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 }
 
 void FieldOfView2D::KeyFuncEvent(GLFWwindow* window, int key, int scancode, int action, int mode)
