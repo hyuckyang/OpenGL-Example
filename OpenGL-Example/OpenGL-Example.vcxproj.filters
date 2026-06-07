@@ -36,6 +36,9 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Example\FieldOfView\FieldOfView2D.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Example\Parabola\Parabola2D.h">
@@ -56,9 +59,14 @@
     <ClInclude Include="Util\Utils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Example\FieldOfView\FieldOfView2D.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Example\Parabola\shader.frag" />
     <None Include="Example\Parabola\shader.vert" />
+    <None Include="Example\FieldOfView\shader.vert" />
+    <None Include="Example\FieldOfView\shader.frag" />
   </ItemGroup>
 </Project>
