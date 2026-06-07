@@ -130,6 +130,7 @@
     <ClCompile Include="Framework\Framework_Drags.cpp" />
     <ClCompile Include="Framework\Framework_ShaderLoader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Example\SDFs\SDFs2D.cpp" />
     <ClCompile Include="Util\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
     <ClInclude Include="Framework\Framework_Based.h" />
     <ClInclude Include="Framework\Framework_Drags.h" />
     <ClInclude Include="Framework\Framework_ShaderLoader.h" />
+    <ClInclude Include="Example\SDFs\SDFs2D.h" />
     <ClInclude Include="Util\Utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +148,8 @@
     <None Include="Example\FieldOfView\shader.vert" />
     <None Include="Example\Parabola\shader.frag" />
     <None Include="Example\Parabola\shader.vert" />
+    <None Include="Example\SDFs\shader.frag" />
+    <None Include="Example\SDFs\shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
