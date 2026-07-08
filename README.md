@@ -1,3 +1,4 @@
+
 ## 개발 환경 (Environment)
 * **IDE:** Visual Studio 2022
 * **Language:** C++
@@ -21,7 +22,7 @@
 * 간단한 수학공식을 활용한 선분과 원 경계의 교차점 계산 및 시야각 선분 렌더링
 
 ## SDFs 기본 학습 내용 구현
-<img width="392" height="394" alt="sdfs2" src="https://github.com/user-attachments/assets/18df2ea9-0102-41e6-a509-bdb64a4d17f7" />
+<img width="392" height="394" alt="asasasa" src="https://github.com/user-attachments/assets/b367ab21-c056-4c05-9bb1-bfda1b54e7c7" />
 
 주요 기능 (Features)
 * 참조: 유튜브 kishimisu의 'Shader Art Coding' 튜토리얼 (https://youtu.be/f4s1h2YETNY)
