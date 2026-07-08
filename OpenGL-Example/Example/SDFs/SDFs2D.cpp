@@ -2,69 +2,109 @@
 
 SDFs2D::SDFs2D()
 {
-    vertShaderFile = "Example/SDFs/shader.vert";
-    fragShaderFile = "Example/SDFs/shader.frag";
-
     currentTime = 0.0f;
 }
 
 void SDFs2D::InitFunc(GLFWwindow* window)
 {
-    Framework_ShaderLoader::InitFunc(window);
+    // 
+    auto loadedFiles = Utils::loadShaderFileFromDir("Example/SDFs/");
 
-    // 화면을 덮는 2개의 삼각형 생성 및 셋팅
-    planeData.push_back({ glm::vec2(-1.0f, -1.0f) });
-    planeData.push_back({ glm::vec2( 1.0f, -1.0f) });
-    planeData.push_back({ glm::vec2(-1.0f,  1.0f) });
-    
-    planeData.push_back({ glm::vec2(-1.0f,  1.0f) });
-    planeData.push_back({ glm::vec2( 1.0f, -1.0f) });
-    planeData.push_back({ glm::vec2( 1.0f,  1.0f) });
+    for (const auto& files : loadedFiles)
+    {
 
-    // 1개 이고 위치만 전송하고 람다 안씀.
+        ShaderInfo info;
+        info.vertFile = files.vertFile;
+        info.fragFile = files.fragFile;
+        shaderFiles.push_back(info);
+    }
+
+    // 삼각형 2개 
+    planeData = 
+    {
+        {{-1.0f, -1.0f}},
+        {{ 1.0f, -1.0f}},
+        {{-1.0f,  1.0f}},
+        {{-1.0f,  1.0f}},
+        {{ 1.0f, -1.0f}},
+        {{ 1.0f,  1.0f}}
+    };
+
     glGenVertexArrays(1, &planeVAO);
     glGenBuffers(1, &planeVBO);
 
     glBindVertexArray(planeVAO);
+
     glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, planeData.size() * sizeof(SVertex), planeData.data(), GL_STATIC_DRAW);
 
-    if (!planeData.empty())
-    {
-        glBufferData(GL_ARRAY_BUFFER, planeData.size() * sizeof(SVertex), planeData.data(), GL_STATIC_DRAW);
-    }
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)offsetof(SVertex, pos));
+    //
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (void*)0);
 
     glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    Framework_GridShaders::InitFunc(window);
 }
 
 void SDFs2D::DrawFunc(GLFWwindow* window)
 {
-    
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(progID);
-
-    int width, height;
+    // 해상도 가져오기 
+    int width = WIN_W, height = WIN_H;
     glfwGetFramebufferSize(window, &width, &height);
 
-    GLint resLoc = glGetUniformLocation(progID, "iResolution");
-    glUniform2f(resLoc, (float)width, (float)height);
-
-    GLint timeLoc = glGetUniformLocation(progID, "iTime");
-    glUniform1f(timeLoc, currentTime);
-
-    // Quad 렌더링
-    if (!planeData.empty())
+    // 쉐이더 없으면
+    int count = shaderFiles.size();
+    if (count == 0)
     {
-        glBindVertexArray(planeVAO);
+        return;
+    }
+
+    int cols = ceil(sqrt(count));
+    int rows = ceil((float)count / cols);
+
+    int cellWidth = width / cols;
+    int cellHeight = height / rows;
+
+    glBindVertexArray(planeVAO);
+
+    // 뷰포트 쪼개서 그리기
+    for (int i = 0; i < count; ++i)
+    {
+        ShaderInfo& info = shaderFiles[i];
+
+        // 컴파일 성공한 것만
+        if (!info.bCompiled)
+        {
+            continue;
+        }
+
+        glUseProgram(info.progID);
+
+        // col , row  id
+        int colIdx = i % cols;
+        int rowIdx = i / cols;
+
+        int x = colIdx * cellWidth;
+        int y = (rows - 1 - rowIdx) * cellHeight;
+        glViewport(x, y, cellWidth, cellHeight);
+
+        // 기본적인 해상도 (cell 크기) 넘겨주기
+        GLint resLoc = glGetUniformLocation(info.progID, "iRes");
+        glUniform2f(resLoc, (float)cellWidth, (float)cellHeight);
+
+        GLint timeLoc = glGetUniformLocation(info.progID, "iTime");
+        glUniform1f(timeLoc, currentTime);
+
+        // 실제 그리기
         glDrawArrays(GL_TRIANGLES, 0, planeData.size());
     }
 
+    // 전체 크기로 복구
+    glViewport(0, 0, width, height);
     glBindVertexArray(0);
 }
 

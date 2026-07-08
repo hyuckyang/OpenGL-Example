@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../../Framework/Framework_ShaderLoader.h"
-#include <vector>
+#include "../../Framework/Framework_GridShaders.h"
 
 struct SVertex
 {
 	glm::vec2 pos;
 };
 
-class SDFs2D : public Framework_ShaderLoader
+class SDFs2D : public Framework_GridShaders
 {
 
 public:

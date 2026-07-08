@@ -42,6 +42,9 @@
     <ClCompile Include="Example\SDFs\SDFs2D.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Framework_GridShaders.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Example\Parabola\Parabola2D.h">
@@ -68,13 +71,36 @@
     <ClInclude Include="Example\SDFs\SDFs2D.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\Framework_GridShaders.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Example\Parabola\shader.frag" />
     <None Include="Example\Parabola\shader.vert" />
     <None Include="Example\FieldOfView\shader.vert" />
     <None Include="Example\FieldOfView\shader.frag" />
-    <None Include="Example\SDFs\shader.vert" />
-    <None Include="Example\SDFs\shader.frag" />
+    <None Include="Example\SDFs\shader_Based.vert" />
+    <None Include="Example\SDFs\shader_Based.frag" />
+    <None Include="Example\SDFs\shader_Color.frag" />
+    <None Include="Example\SDFs\shader_Color.vert" />
+    <None Include="Example\SDFs\shader_00_Based.frag" />
+    <None Include="Example\SDFs\shader_00_Based.vert" />
+    <None Include="Example\SDFs\shader_01_Color.frag" />
+    <None Include="Example\SDFs\shader_01_Color.vert" />
+    <None Include="Example\SDFs\shader_02_Length.frag" />
+    <None Include="Example\SDFs\shader_02_Length.vert" />
+    <None Include="Example\SDFs\shader_03_Step.vert" />
+    <None Include="Example\SDFs\shader_03_Step.frag" />
+    <None Include="Example\SDFs\shader_04_StepColor.frag" />
+    <None Include="Example\SDFs\shader_04_StepColor.vert" />
+    <None Include="Example\SDFs\shader_05_Fract.frag" />
+    <None Include="Example\SDFs\shader_05_Fract.vert" />
+    <None Include="Example\SDFs\shader_06_Iteration.frag" />
+    <None Include="Example\SDFs\shader_06_Iteration.vert" />
+    <None Include="Example\SDFs\shader_08_Pow.vert" />
+    <None Include="Example\SDFs\shader_07_Exp.frag" />
+    <None Include="Example\SDFs\shader_07_Exp.vert" />
+    <None Include="Example\SDFs\shader_08_Pow.frag" />
   </ItemGroup>
 </Project>
