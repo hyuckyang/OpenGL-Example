@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClCompile Include="Example\Parabola\Parabola2D.cpp" />
     <ClCompile Include="Example\FieldOfView\FieldOfView2D.cpp" />
+    <ClCompile Include="Example\SDFsRayMarching\SDFsRayMarching.cpp" />
     <ClCompile Include="Framework\Framework.cpp" />
     <ClCompile Include="Framework\Framework_Based.cpp" />
     <ClCompile Include="Framework\Framework_Drags.cpp" />
@@ -137,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="Example\Parabola\Parabola2D.h" />
     <ClInclude Include="Example\FieldOfView\FieldOfView2D.h" />
+    <ClInclude Include="Example\SDFsRayMarching\SDFsRayMarching.h" />
     <ClInclude Include="Framework\Framework.h" />
     <ClInclude Include="Framework\Framework_Based.h" />
     <ClInclude Include="Framework\Framework_Drags.h" />
@@ -150,6 +152,12 @@
     <None Include="Example\FieldOfView\shader.vert" />
     <None Include="Example\Parabola\shader.frag" />
     <None Include="Example\Parabola\shader.vert" />
+    <None Include="Example\SDFsRayMarching\shader_00_Origin.frag" />
+    <None Include="Example\SDFsRayMarching\shader_00_Origin.vert" />
+    <None Include="Example\SDFsRayMarching\shader_01_RayMarching.frag" />
+    <None Include="Example\SDFsRayMarching\shader_01_RayMarching.vert" />
+    <None Include="Example\SDFsRayMarching\shader_02_Optimizations.frag" />
+    <None Include="Example\SDFsRayMarching\shader_02_Optimizations.vert" />
     <None Include="Example\SDFs\shader_00_Based.frag" />
     <None Include="Example\SDFs\shader_00_Based.vert" />
     <None Include="Example\SDFs\shader_01_Color.frag" />

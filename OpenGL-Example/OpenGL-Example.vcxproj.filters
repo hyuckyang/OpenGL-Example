@@ -45,6 +45,9 @@
     <ClCompile Include="Framework\Framework_GridShaders.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Example\SDFsRayMarching\SDFsRayMarching.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Example\Parabola\Parabola2D.h">
@@ -72,6 +75,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Framework_GridShaders.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Example\SDFsRayMarching\SDFsRayMarching.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -102,5 +108,11 @@
     <None Include="Example\SDFs\shader_07_Exp.frag" />
     <None Include="Example\SDFs\shader_07_Exp.vert" />
     <None Include="Example\SDFs\shader_08_Pow.frag" />
+    <None Include="Example\SDFsRayMarching\shader_00_Origin.frag" />
+    <None Include="Example\SDFsRayMarching\shader_00_Origin.vert" />
+    <None Include="Example\SDFsRayMarching\shader_01_RayMarching.frag" />
+    <None Include="Example\SDFsRayMarching\shader_01_RayMarching.vert" />
+    <None Include="Example\SDFsRayMarching\shader_02_Optimizations.frag" />
+    <None Include="Example\SDFsRayMarching\shader_02_Optimizations.vert" />
   </ItemGroup>
 </Project>
