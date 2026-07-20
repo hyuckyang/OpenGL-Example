@@ -114,5 +114,11 @@
     <None Include="Example\SDFsRayMarching\shader_01_RayMarching.vert" />
     <None Include="Example\SDFsRayMarching\shader_02_Optimizations.frag" />
     <None Include="Example\SDFsRayMarching\shader_02_Optimizations.vert" />
+    <None Include="Example\SDFsRayMarching\shader_03_Translation.frag" />
+    <None Include="Example\SDFsRayMarching\shader_03_Translation.vert" />
+    <None Include="Example\SDFsRayMarching\shader_04_Operators.frag" />
+    <None Include="Example\SDFsRayMarching\shader_04_Operators.vert" />
+    <None Include="Example\SDFsRayMarching\shader_04_OperatorsSmooth.frag" />
+    <None Include="Example\SDFsRayMarching\shader_04_OperatorsSmooth.vert" />
   </ItemGroup>
 </Project>
