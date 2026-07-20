@@ -30,7 +30,7 @@
 * 색상 애니메이션: 시간(iTime)과 코사인 팔레트를 조합한 역동적인 네온 글로우(Neon Glow) 렌더링
 
 ## SDFs RayMarching 구현
-<img width="392" height="394" alt="raymatch" src="https://github.com/user-attachments/assets/23b9a618-4c28-45ac-ac6d-0e99205449e5" />
+<img width="392" height="494" alt="raymarching" src="https://github.com/user-attachments/assets/228b27f4-7235-4ba4-9878-585342213785" />
 
 주요 기능 (Features)
 * 참조: 유튜브 kishimisu의 'Raymarching Intro' 튜토리얼 (https://youtu.be/khblXafu7iA?si=o4LI7fijlCGBXRyH)
